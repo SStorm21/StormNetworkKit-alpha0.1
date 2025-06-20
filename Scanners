@@ -1,0 +1,303 @@
+scans as a local host scan and its kinda dumb if you think using 
+nmap on a router public ip is gonna do
+
+1) os :
+# nmap -O --osscan-guess; --fuzzy --max-os-tries 15 
+
+
+2) open ports & close ports & service version:
+# nmap -sV --top-ports 100
+# nmap -sV -p-
+
+
+3) scan-vulns 
+# nmap -sV --script vulners 
+# nmap -p- -sV --script vulners 
+
+hydra -l <username> -P <path_to_password_list> smb://<target_ip>
+
+
+4) assume its a:
+* windows:
+	7: 
+		nmap -p80 --script http-vuln-cve2015-1635.nse
+		nmap -sV --script http-vuln-cve2015-1635 --script-args uri='/anotheruri/'
+		nmap -p445 --script smb-vuln-ms17-010 
+		nmap -p445 --script vuln
+		nmap --script smb-vuln-ms08-067.nse -p445
+		nmap -sU --script smb-vuln-ms08-067.nse -p U:137
+	10:
+
+5) spoofing options 
+* set interface
+* set source ip
+* enabel decoy <need to add ur ip in them> more at: https://nmap.org/book/man-bypass-firewalls-ids.html , https://security.stackexchange.com/questions/140972/nmap-spoofing-ip-adress-s-option-or-using-proxy-chains-whats-the-differenc
+
+example as searching on os system 
+# -e for interface set what interface you have or you want to use 
+# sudo nmap -e lo -S 192.168.0.120 -p- -sV -Pn -O --osscan-guess --max-os-tries 15 192.168.0.115
+# sudo nmap -e lo -S 192.168.0.120 -p- -sV -Pn -O --osscan-guess --max-os-tries 15 192.168.0.115
+# sudo nmap -e lo -D 192.168.0.5,192.168.0.120,192.168.0.110 -p- -sV -Pn -O --osscan-guess --max-os-tries 15 192.168.0.115
+
+
+vulns 
+
+    HTTP
+        http-vuln* (e.g., http-vuln-cve2017-5638, http-vuln-cve2017-9805)
+        http-enum
+        http-methods
+
+    SMB
+        smb-vuln* (e.g., smb-vuln-ms17-010, smb-vuln-cve-2017-7494)
+        smb-enum-shares
+        smb-enum-users
+
+    FTP
+        ftp-vuln* (e.g., ftp-vuln-cve2010-4221)
+        ftp-anon
+        ftp-bounce
+
+    SSH
+        ssh-vuln* (e.g., ssh-vuln-cve2018-15473)
+        ssh-hostkey
+
+    DNS
+        dns-vuln* (e.g., dns-vuln-cve2017-3140)
+        dns-zone-transfer
+
+    SNMP
+        snmp-vuln* (e.g., snmp-vuln-cve2014-3566)
+        snmp-brute
+
+    MySQL
+        mysql-vuln* (e.g., mysql-vuln-cve2012-2122)
+        mysql-enum
+
+    PostgreSQL
+        pgsql-vuln* (e.g., pgsql-vuln-cve2017-7486)
+        pgsql-enum
+
+    RDP
+        rdp-vuln* (e.g., rdp-vuln-cve2019-0708)
+
+    WebDAV
+        http-webdav-scan
+        http-webdav-svn
+
+    LDAP
+        ldap-vuln* (e.g., ldap-vuln-cve2017-12149)
+
+    Kerberos
+        kerberos-vuln* (e.g., kerberos-vuln-cve2017-1001000)
+
+		
+
+
+3. HTTP Authentication
+
+To check for HTTP authentication methods:
+
+nmap -p 80,443 --script http-auth --script-args 'http-user=<username>,http-passwd=<password>' <target_ip>
+
+To enumerate HTTP directories with authentication:
+
+nmap -p 80,443 --script http-enum --script-args 'http-user=<username>,http-passwd=<password>' <target_ip>
+
+1. http-auth
+
+This script checks for the presence of HTTP authentication.
+
+Usage:
+
+bash
+
+nmap --script http-auth -p 80,443 <target>
+
+2. http-auth-basic
+
+This script attempts to brute-force HTTP Basic Authentication credentials.
+
+Usage:
+
+bash
+
+nmap --script http-auth-basic --script-args userdb=user.txt,passdb=pass.txt -p 80,443 <target>
+
+3. http-auth-digest
+
+This script attempts to brute-force HTTP Digest Authentication credentials.
+
+Usage:
+
+bash
+
+nmap --script http-auth-digest --script-args userdb=user.txt,passdb=pass.txt -p 80,443 <target>
+
+4. http-brute
+
+This script performs brute-force password guessing against HTTP authentication.
+
+Usage:
+
+bash
+
+nmap --script http-brute --script-args userdb=user.txt,passdb=pass.txt -p 80,443 <target>
+
+5. http-enum
+
+This script enumerates directories and files on a web server, which can help identify potential authentication vulnerabilities.
+
+Usage:
+
+bash
+
+nmap --script http-enum -p 80,443 <target>
+
+6. http-vuln-cve2014-3704
+
+This script checks for a specific vulnerability (CVE-2014-3704) in Drupal that can lead to unauthorized access.
+
+Usage:
+
+bash
+
+nmap --script http-vuln-cve2014-3704 -p 80,443 <target>
+
+7. http-vuln-cve2017-5638
+
+This script checks for a vulnerability (CVE-2017-5638) in Apache Struts that can lead to remote code execution.
+
+Usage:
+
+bash
+
+nmap --script http-vuln-cve2017-5638 -p 80,443 <target>
+
+8. http-vuln-cve2019-11043
+
+This script checks for a vulnerability (CVE-2019-11043) in PHP-FPM that can lead to remote code execution.
+
+Usage:
+
+bash
+
+nmap --script http-vuln-cve2019-11043 -p 80,443 <target>
+
+9. http-slowloris
+
+This script checks for the Slowloris denial of service vulnerability.
+
+Usage:
+
+bash
+
+nmap --script http-slowloris -p 80,443 <target>
+
+10. http-sql-injection
+
+This script checks for SQL injection vulnerabilities in web applications.
+
+Usage:
+
+bash
+
+nmap --script http-sql-injection -p 80,443 <target>
+
+11. http-xssed
+
+This script checks for reflected Cross-Site Scripting (XSS) vulnerabilities.
+
+Usage:
+
+bash
+
+nmap --script http-xssed -p 80,443 <target>
+
+12. http-vuln-cve2018-11776
+
+This script checks for a vulnerability (CVE-2018-11776) in Apache Struts that can lead to remote code execution.
+
+Usage:
+
+bash
+
+nmap --script http-vuln-cve2018-11776 -p 80,443 <target>
+
+Conclusion
+
+These examples demonstrate how to use Nmap scripts to scan for various authentication vulnerabilities in HTTP services. Always ensure you have permission to scan the target systems and comply with legal and ethical guidelines when performing security assessments.
+
+
+4. MySQL Authentication
+
+To gather information from a MySQL database with authentication:
+
+bash
+
+nmap -p 3306 --script mysql-info --script-args 'user=<username>,password=<password>' <target_ip>
+
+To check for MySQL vulnerabilities:
+
+bash
+
+nmap -p 3306 --script mysql-vuln* --script-args 'user=<username>,password=<password>' <target_ip>
+
+5. SNMP Authentication
+
+To gather SNMP information with a community string:
+
+bash
+
+nmap -p 161 --script snmp-info --script-args 'community=<community_string>' <target_ip>
+
+To check for SNMP vulnerabilities:
+
+bash
+
+nmap -p 161 --script snmp-vuln* --script-args 'community=<community_string>' <target_ip>
+
+6. PostgreSQL Authentication
+
+To gather information from a PostgreSQL database:
+
+bash
+
+nmap -p 5432 --script pgsql-info --script-args 'user=<username>,password=<password>' <target_ip>
+
+7. RDP Authentication
+
+To check for RDP vulnerabilities:
+
+bash
+
+nmap -p 3389 --script rdp-vuln-ms12-020 <target_ip>
+
+8. VNC Authentication
+
+To check for VNC authentication:
+
+bash
+
+nmap -p 5900 --script vnc-info --script-args 'user=<username>,password=<password>' <target_ip>
+
+9. FTP Authentication
+
+To check for FTP login with a username and password:
+
+bash
+
+nmap -p 21 --script ftp-brute --script-args userdb=usernames.txt,passdb=passwords.txt <target_ip>
+
+Important Notes:
+
+    Replace <target_ip>, <username>, <password>, and other placeholders with actual values.
+    Ensure you have permission to scan the target systems. Unauthorized scanning can be illegal and unethical.
+    Use the -oN option to save the output to a file for later analysis if needed.
+
+These examples cover a range of authentication methods that can be tested using Nmap scripts. Each script can provide valuable information about the security posture of the target system.
+
+----------------------------------+
+settings: (in new versions not rn)|
+==================================+
+* show only open ports 
+* save as a file

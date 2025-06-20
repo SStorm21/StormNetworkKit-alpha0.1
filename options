@@ -1,0 +1,7 @@
+enable other options using: 
++ options
+ -> set decoy (default is 10)
+ -> enable no ping (-Pn)
+ -> set scan speed (default for nmap is )
+
+
